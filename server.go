@@ -47,8 +47,8 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.POST("/author", InsertUser)
-	e.GET("/author/:id", SelectUser)
+	e.POST("/user", InsertUser)
+	e.GET("/user/:id", SelectUser)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
