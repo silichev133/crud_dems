@@ -16,18 +16,21 @@ type User struct {
 
 var (
 	userstable = "users"
-	seq        = 1
+	seq        = 2 //Сделал так, потому что в оригинальной таблице у меня уже есть пользователь с id = 1
 	conn, err  = dbr.Open("mysql", "root:@tcp(localhost:3306)/test", nil)
 	sess       = conn.NewSession(nil)
 )
 
 func InsertUser(c echo.Context) error {
-	user := new(User)
+	user := &User{
+		Id: seq,
+	}
 	if err := c.Bind(user); err != nil {
 		return err
 	}
-	sess.InsertInto(userstable).Columns("id", "name").Values(user.Id, user.Name).Exec()
-	return c.NoContent(http.StatusOK)
+	sess.InsertInto(userstable).Columns("name").Values(user.Name).Exec()
+	seq++
+	return c.JSON(http.StatusCreated, user)
 }
 
 func SelectUser(c echo.Context) error {
@@ -44,7 +47,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.POST("/authors", InsertUser)
+	e.POST("/author", InsertUser)
 	e.GET("/author/:id", SelectUser)
 
 	e.Logger.Fatal(e.Start(":8080"))
